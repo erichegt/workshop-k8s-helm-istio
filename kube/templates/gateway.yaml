@@ -1,0 +1,16 @@
+{{- if .Values.enableGateway }}
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: {{ .Chart.Name }}-gateway
+spec:
+  selector:
+    istio: {{ .Values.networking.istioGateway }}
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+      {{- toYaml .Values.networking.hosts | nindent 6 }}
+{{- end }}

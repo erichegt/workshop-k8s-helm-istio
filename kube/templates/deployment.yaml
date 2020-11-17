@@ -1,0 +1,105 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "hello-istio.fullname" . }}-blue
+  labels:
+    {{- include "hello-istio.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "hello-istio.selectorLabels" . | nindent 6 }}
+      appBucket: blue
+  template:
+    metadata:
+      labels:
+        {{- include "hello-istio.selectorLabels" . | nindent 8 }}
+        appBucket: blue
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 3000
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          env:
+            - name: DELAY_VALUE
+              value: "{{ .Values.serviceDelayValue }}"
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name  #downwardAPI
+            {{- if .Values.nextService }}
+            - name: NEXT_SVC_URL
+              value: "{{ .Values.nextService }}.{{ .Release.Namespace }}.svc.cluster.local"
+            {{- end}}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- if .Values.greenAppVersion }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "hello-istio.fullname" . }}-green
+  labels:
+    {{- include "hello-istio.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "hello-istio.selectorLabels" . | nindent 6 }}
+      appBucket: green
+  template:
+    metadata:
+      labels:
+        {{- include "hello-istio.selectorLabels" . | nindent 8 }}
+        appBucket: green
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.greenAppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 3000
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          env:
+            - name: DELAY_VALUE
+              value: "{{ .Values.serviceDelayValue }}"
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name  #downwardAPI
+            {{- if .Values.nextService }}
+            - name: NEXT_SVC_URL
+              value: "{{ .Values.nextService }}.{{ .Release.Namespace }}.svc.cluster.local"
+            {{- end}}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}

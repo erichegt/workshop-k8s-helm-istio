@@ -1,0 +1,54 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: {{ include "hello-istio.fullname" . }}
+  labels:
+    {{- include "hello-istio.labels" . | nindent 4 }}
+spec:
+  hosts:
+  {{- if .Values.enableGateway }}
+    {{- toYaml .Values.networking.hosts | nindent 4 }}
+  {{- else }}
+    - {{ include "hello-istio.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local
+  {{- end }}
+  gateways:
+    {{- if .Values.enableGateway }}
+    - {{ .Chart.Name }}-gateway
+    {{- end }}
+    - mesh
+  http:
+  - route:
+  {{- if .Values.greenAppVersion }}
+    - destination:
+        host: {{ include "hello-istio.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local
+        subset: blue
+        port:
+          number: 80
+      weight: {{ sub 100 .Values.greenPercentage }}
+    - destination:
+        host: {{ include "hello-istio.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local
+        subset: green
+        port:
+          number: 80
+      weight: {{ .Values.greenPercentage }}
+  {{- else }}
+    - destination:
+        host: {{ include "hello-istio.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local
+        port:
+          number: 80
+  {{- end }}
+{{- if .Values.enableCircuitBreaker }}
+    timeout: 0.5s
+{{- end }}
+{{- if .Values.enablePathOverride }}
+  # - match:
+  #   - uri:
+  #       prefix: "/"
+  #   rewrite:
+  #     uri: "/chain"
+  #   route:
+  #   - destination:
+  #       host: "{{ include "hello-istio.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local"
+  #       port:
+  #         number: 80
+  {{- end }}

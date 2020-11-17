@@ -1,0 +1,20 @@
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+replicaCount: 1
+
+networking:
+  http:
+    maxConnections: 1024
+    connectTimeout: 60s
+    http1MaxPendingRequests: 1024
+    maxRequestsPerConnection: 10000
+    idleTimeout: 3m
+  istioGateway: ingress-private-dev-gateway
+  hosts:
+    - "hello-istio-public.aws.my-company.io"

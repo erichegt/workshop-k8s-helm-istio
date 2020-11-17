@@ -1,0 +1,35 @@
+# Default values for hello-istio.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: erichegt/hello-istio
+  # pullPolicy: IfNotPresent
+  pullPolicy: Always #for testing purpouses
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  type: ClusterIP
+  port: 80
+
+resources: {}
+
+nodeSelector: {}
+
+nextService: ""
+
+greenAppVersion: ""
+greenPercentage: 0
+
+enableGateway: false
+enableCircuitBreaker: false
+enablePathOverride: false
+
+serviceDelayValue: 7000
+
+

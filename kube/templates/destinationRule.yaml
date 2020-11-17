@@ -1,0 +1,37 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: {{ include "hello-istio.fullname" . }}
+  labels:
+    {{- include "hello-istio.labels" . | nindent 4 }}
+spec:
+  host: {{ include "hello-istio.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local
+{{- if .Values.greenAppVersion }}
+  subsets:
+    - name: blue
+      labels:
+        appBucket: blue
+    - name: green
+      labels:
+        appBucket: green
+{{- end }}
+{{- if .Values.enableCircuitBreaker }}
+  trafficPolicy:
+    connectionPool:
+      tcp:
+        maxConnections: {{ .Values.networking.http.maxConnections }}
+        connectTimeout: {{ .Values.networking.http.connectTimeout }}
+        tcpKeepalive:
+          probes: 9
+          time: 7200s
+          interval: 75s
+      http:
+        http1MaxPendingRequests: {{ .Values.networking.http.http1MaxPendingRequests }}
+        maxRequestsPerConnection: {{ .Values.networking.http.maxRequestsPerConnection }}
+        idleTimeout: {{ .Values.networking.http.idleTimeout }}
+    outlierDetection:
+      baseEjectionTime: 5s #20s
+      consecutiveErrors: 3
+      interval: 3s #10s
+      maxEjectionPercent: 100
+{{- end }}
