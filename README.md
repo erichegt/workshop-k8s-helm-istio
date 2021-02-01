@@ -25,16 +25,26 @@ kubectl config use-context minikube
 
 ### Istio
 
-Baixe e descompacte o Istio 1.6.5 (precisa ser até essa versão pois a partir do release 1.7.0 o profile demo não vem mais com kiali e outras ferramentas apresentadas nesse workshop) que pode ser encontrado na url: https://istio.io/latest/news/releases/1.6.x/announcing-1.6.5/ (a partir da versão 1.7.0 o kiali e outros add-ons precisam ser instalados separadamente). Instale o Istio na versão do profile demo segundo a doc: https://istio.io/latest/docs/setup/getting-started/. Abaixo o tutorial resumido:
+Instale o Istio na versão do profile demo segundo a doc: https://istio.io/latest/docs/setup/getting-started/. Abaixo o tutorial resumido:
 
-Resumindo o link acima, depois de baixar o Istio 1.6.5 e descompactá-lo:
+Resumindo o link acima, depois de baixar o Istio e descompactá-lo, a ultima versão disponível no momento dessa escrita é 1.8.2:
 ```sh
-cd istio-1.6.5
+curl -L https://istio.io/downloadIstio | sh -
+cd istio-1.8.2
 export PATH=$PWD/bin:$PATH
-istioctl install --set profile=demo
+istioctl install --set profile=demo -y
 ```
 
 Obs: No Linux uma alternativa bem interessante ao uso do `Minikube` é o `Microk8s` (https://microk8s.io). Entretando alguns dos add-ons utilizados nesse workshop precisarão ser instalados manualmente também. Espero poder atualizar esse material explicando como fazer esse setup em algum momento ;)
+
+#### Addons
+Vamos instalar também alguns addons que irão nos ajudar a entender a estrutura do nosso mesh através de alguns dashboards, os componentes são Kiali, Prometheus, Grafana, e Jaeger.
+```sh
+kubectl apply -f samples/addons
+```
+
+Obs: Caso aconteça algum problema na aplicação desses recursos, tente rodar o comando acima novamente.
+
 
 ### Helm
 
