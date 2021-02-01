@@ -25,9 +25,10 @@ kubectl config use-context minikube
 
 ### Istio
 
-Instale o Istio na versão do profile demo segundo a doc: https://istio.io/latest/docs/setup/getting-started/. Abaixo o tutorial resumido:
+Instale o Istio na versão do profile demo segundo a doc: https://istio.io/latest/docs/setup/getting-started/.
+A última versão disponível no momento dessa escrita é a 1.8.2. Abaixo o tutorial resumido:
 
-Resumindo o link acima, depois de baixar o Istio e descompactá-lo, a ultima versão disponível no momento dessa escrita é 1.8.2:
+Resumindo o link acima;
 ```sh
 curl -L https://istio.io/downloadIstio | sh -
 cd istio-1.8.2
