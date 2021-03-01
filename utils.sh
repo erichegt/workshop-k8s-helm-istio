@@ -58,9 +58,13 @@ function callDelay() {
     curl -i -X POST http://localhost:6000/changeDelay
 }
 
+function callCaos() {
+    curl -i -X POST http://localhost:6000/changeCaos
+}
+
 function deleteResources() {
     for ((i=1;i<=$total_number_services;i++)) do
-        helm -n istio-dev delete hello-istio${i} 
+        helm -n istio-dev delete hello-istio${i}
     done
 }
 
@@ -132,6 +136,9 @@ case "$1" in
 		;;
     "callDelay")
 		callDelay
+		;;
+    "callCaos")
+		callCaos
 		;;
 	"callChain")
 		callIngressChain $2
