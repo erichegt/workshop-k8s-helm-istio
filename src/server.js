@@ -3,12 +3,12 @@ const httpClient = require('./http-client');
 const fastify = require('fastify')({ logger: true })
 // import fastify from 'fastify';
 
-let caos = false;
+let chaos = !(process.env.AVOID_CHAOS==="true");
 let delay = false;
 let nextService = process.env.NEXT_SVC_URL;
 let delayValue = process.env.DELAY_VALUE || 6000;
 let currentPodName = process.env.POD_NAME;
-let version = 'v0.6';
+let version = 'v0.7';
 
 async function wait(ms) {
   return new Promise(resolve => {
@@ -24,14 +24,14 @@ let errorResponse = (reply) => {
 }
 
 fastify.get('/', async (request, reply) => {
-  if (caos) {
+  if (chaos) {
     return errorResponse(reply);
   }
   return { hello: 'world', version }
 })
 
 fastify.get('/chain', async (request, reply) => {
-  if (caos) {
+  if (chaos) {
     return errorResponse(reply);
   }
   if (delay) {
@@ -50,8 +50,8 @@ fastify.get('/chain', async (request, reply) => {
 })
 
 fastify.post('/changeCaos', async (request, reply) => {
-  caos = !caos;
-  return { msg: `caos changed to: ${caos}` }
+  chaos = !chaos;
+  return { msg: `chaos changed to: ${chaos}` }
 })
 
 fastify.post('/changeDelay', async (request, reply) => {
