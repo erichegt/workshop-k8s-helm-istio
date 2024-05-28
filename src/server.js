@@ -8,7 +8,7 @@ let delay = false;
 let nextService = process.env.NEXT_SVC_URL;
 let delayValue = process.env.DELAY_VALUE || 6000;
 let currentPodName = process.env.POD_NAME;
-let version = 'v0.7';
+let version = 'v0.8';
 
 async function wait(ms) {
   return new Promise(resolve => {

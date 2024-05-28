@@ -9,6 +9,9 @@ const TRACE_HEADERS = {
 	'x-b3-traceid': true,
 	'x-ot-span-context': true,
 	'x-request-id': true,
+	'x-ot-span-context': true, // if using Lightstep https://istio.io/latest/about/faq/distributed-tracing/
+	'traceparent': true, // if using OpenTelemetry, OpenCensus or Stackdriver
+	'tracestate': true, // if using OpenTelemetry, OpenCensus or Stackdriver
 };
 
 const filterTracingHeaders = headers => Object.assign(...Object.entries(headers).map(([header, value]) => {
